@@ -18,10 +18,17 @@ func SkipTrace(skip int) SetOptionFn {
 	}
 }
 
+func FallbackError(err *Error) SetOptionFn {
+	return func(o *options) {
+		o.fallbackErr = err
+	}
+}
+
 type options struct {
-	namespace string
-	metadata  map[string]interface{}
-	skipTrace int
+	namespace   string
+	metadata    map[string]interface{}
+	skipTrace   int
+	fallbackErr *Error
 }
 
 type SetOptionFn = func(*options)
