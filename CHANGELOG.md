@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- fix(error): Rename TraceError to Trace; Make source as optional parameter
+
 ## 0.2.0
 
 - feat(option): Add AddMetadata error option function
