@@ -30,11 +30,18 @@ func FallbackError(err *Error) SetOptionFn {
 	}
 }
 
+func Source(err error) SetOptionFn {
+	return func(o *options) {
+		o.sourceErr = err
+	}
+}
+
 type options struct {
 	namespace   string
 	metadata    map[string]interface{}
 	skipTrace   int
 	fallbackErr *Error
+	sourceErr   error
 }
 
 type SetOptionFn = func(*options)

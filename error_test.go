@@ -69,7 +69,7 @@ func TestCopyExistingMetadata(t *testing.T) {
 
 func TestTraceInternalError(t *testing.T) {
 	gErr := fmt.Errorf("invalid email format")
-	err := errx.TraceError(gErr)
+	err := errx.Trace(gErr)
 
 	// Get trace
 	traces := err.Traces()
@@ -111,19 +111,19 @@ func TestNestedTraceInternalError(t *testing.T) {
 }
 
 func nestedErr1() *errx.Error {
-	return errx.TraceError(fmt.Errorf("invalid email format"))
+	return errx.Trace(fmt.Errorf("invalid email format"))
 }
 
 func nestedErr2() *errx.Error {
-	return errx.InternalError().Trace(nestedErr1())
+	return errx.InternalError().Trace(errx.Source(nestedErr1()))
 }
 
 func nestedErr3() *errx.Error {
-	return errx.TraceError(nestedErr2())
+	return errx.Trace(nestedErr2())
 }
 
 func TestPrintWithCause(t *testing.T) {
-	err := errx.InternalError().Trace(fmt.Errorf("invalid phone format"))
+	err := errx.InternalError().Trace(errx.Source(fmt.Errorf("invalid phone format")))
 
 	errMsg := err.Error()
 
@@ -149,7 +149,7 @@ func TestPrintWithCause(t *testing.T) {
 }
 
 func TestTraceNil(t *testing.T) {
-	err := errx.TraceError(nil)
+	err := errx.Trace(nil)
 
 	if err != nil {
 		t.Errorf("unexpected error must be nil. Error = %s", err)
@@ -224,6 +224,21 @@ func TestAddMetadata(t *testing.T) {
 
 	if v != 400 {
 		t.Errorf("unexpected httpStatus value in metadata. status = %d", v)
+	}
+}
+
+func TestTraceEmpty(t *testing.T) {
+	err := errx.InternalError().Trace()
+
+	traces := err.Traces()
+
+	if len(traces) != 1 {
+		t.Errorf("unexpected traces length. Length = %d", len(traces))
+		return
+	}
+
+	if msg := traces[0]; !strings.HasSuffix(msg, "nbs-go/errx/error_test.go:231") {
+		t.Errorf("unexpected trace message. Trace = %s", msg)
 	}
 }
 

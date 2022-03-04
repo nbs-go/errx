@@ -136,17 +136,18 @@ func (e *Error) Wrap(err error) *Error {
 	return nErr
 }
 
-func (e *Error) Trace(err error, args ...SetOptionFn) *Error {
-	// If err is nil, then return empty
-	if err == nil {
-		return nil
+func (e *Error) Trace(args ...SetOptionFn) *Error {
+	// Get options
+	o := evaluateOptions(args)
+
+	var nErr *Error
+	if o.sourceErr != nil {
+		nErr = e.Wrap(o.sourceErr)
+	} else {
+		nErr = e.Copy()
 	}
 
-	// Wrap error
-	nErr := e.Wrap(err)
-
 	// Get trace
-	o := evaluateOptions(args)
 	ct := trace(o.skipTrace)
 	nErr.traces = []string{ct}
 

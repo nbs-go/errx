@@ -9,9 +9,13 @@ func InternalError() *Error {
 	return NewError("ERROR", "Internal Error")
 }
 
-// TraceError wrap and trace error. If error is not *errx.Error then it will be wrapped into InternalError
+// Trace wrap and trace error. If error is not *errx.Error then it will be wrapped into InternalError
 // Else, it will add stack trace to error
-func TraceError(err error) *Error {
+func Trace(err error) *Error {
+	if err == nil {
+		return nil
+	}
+
 	// Check error type
 	tErr, ok := err.(*Error)
 	if !ok {
@@ -19,7 +23,7 @@ func TraceError(err error) *Error {
 		tErr = InternalError()
 	}
 
-	return tErr.Trace(err, SkipTrace(2))
+	return tErr.Trace(Source(err), SkipTrace(2))
 }
 
 func Wrap(err error) *Error {
