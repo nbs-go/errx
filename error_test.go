@@ -242,6 +242,16 @@ func TestTraceEmpty(t *testing.T) {
 	}
 }
 
+func TestTraceErrorf(t *testing.T) {
+	err := errx.InternalError().Trace(errx.Errorf("unexpected value not found"))
+
+	uErr := err.Unwrap()
+
+	if uErr.Error() != "unexpected value not found" {
+		t.Errorf("unexpected traced Errorf. Error = %s", uErr)
+	}
+}
+
 func BenchmarkNested(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := nestedErr3()

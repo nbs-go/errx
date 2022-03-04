@@ -1,5 +1,7 @@
 package errx
 
+import "fmt"
+
 func WithNamespace(namespace string) SetOptionFn {
 	return func(o *options) {
 		o.namespace = namespace
@@ -33,6 +35,12 @@ func FallbackError(err *Error) SetOptionFn {
 func Source(err error) SetOptionFn {
 	return func(o *options) {
 		o.sourceErr = err
+	}
+}
+
+func Errorf(msg string, args ...interface{}) SetOptionFn {
+	return func(o *options) {
+		o.sourceErr = fmt.Errorf(msg, args...)
 	}
 }
 
