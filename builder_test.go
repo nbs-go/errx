@@ -110,6 +110,5 @@ func RecoverPanic(t *testing.T, expectation error) func() {
 		default:
 			t.Errorf("unexpected type recovering from panic. r = %+v", actual)
 		}
-
 	}
 }

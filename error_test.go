@@ -211,6 +211,22 @@ func TestIsGenericError(t *testing.T) {
 	}
 }
 
+func TestAddMetadata(t *testing.T) {
+	err := errx.NewError("ERR_1", "Resource not found", errx.AddMetadata("httpStatus", 400))
+
+	meta := err.Metadata()
+
+	v, ok := meta["httpStatus"]
+	if !ok {
+		t.Errorf("unexpected httpStatus metadata is not set. Metadata = %+v", meta)
+		return
+	}
+
+	if v != 400 {
+		t.Errorf("unexpected httpStatus value in metadata. status = %d", v)
+	}
+}
+
 func BenchmarkNested(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := nestedErr3()

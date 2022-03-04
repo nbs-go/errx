@@ -12,6 +12,12 @@ func WithMetadata(metadata map[string]interface{}) SetOptionFn {
 	}
 }
 
+func AddMetadata(key string, value interface{}) SetOptionFn {
+	return func(o *options) {
+		o.metadata[key] = value
+	}
+}
+
 func SkipTrace(skip int) SetOptionFn {
 	return func(o *options) {
 		o.skipTrace = skip
@@ -35,6 +41,7 @@ type SetOptionFn = func(*options)
 
 func defaultOptions() *options {
 	return &options{
+		metadata:  make(map[string]interface{}),
 		skipTrace: 1,
 	}
 }
