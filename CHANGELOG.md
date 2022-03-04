@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- feat(option): Add option to trace generic error with fmt.Errorf
+
 ## 0.2.1
 
 - fix(error): Rename TraceError to Trace; Make source as optional parameter
