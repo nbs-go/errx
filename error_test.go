@@ -252,6 +252,14 @@ func TestTraceErrorf(t *testing.T) {
 	}
 }
 
+func TestErrorMessage(t *testing.T) {
+	err := errx.NewError("ERR_1", "malformed token")
+
+	if err.Message() != "malformed token" {
+		t.Errorf("unexpected error message. Error = %s", err)
+	}
+}
+
 func BenchmarkNested(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		err := nestedErr3()

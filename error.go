@@ -122,6 +122,11 @@ func (e *Error) Traces() []string {
 	return e.traces
 }
 
+// Message is getter function to retrieve message value
+func (e *Error) Message() string {
+	return e.message
+}
+
 func (e *Error) Wrap(err error) *Error {
 	if err == nil {
 		return nil
