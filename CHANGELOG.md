@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- feat(error): Add Message getter function
+
 ## 0.3.0
 
 - feat(option): Add option to trace generic error with fmt.Errorf
