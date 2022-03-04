@@ -28,29 +28,17 @@ type Builder struct {
 
 // NewError create new error and ensure error is unique by it's code
 func (b *Builder) NewError(code string, message string, args ...SetOptionFn) *Error {
-	// Prevent setting error code that is equal with fallback error
-	if code == b.fallbackErr.Code() {
-		panic(DuplicateFallbackError)
-	}
-
-	// If args is empty, then set namespace
-	if len(args) == 0 {
-		args = []SetOptionFn{WithNamespace(b.namespace)}
-	} else {
-		// Else, merge arguments and override namespace
-		args = append(args, WithNamespace(b.namespace))
-	}
-
 	// Create error
+	args = b.mergeArgs(args)
 	err := NewError(code, message, args...)
 
 	// Register error to dictionary, always overwrite existing
-	b.errMap[err.Code()] = err
+	b.registerError(err)
 
 	return err
 }
 
-// Get retrieve error by Code, if not exist then return fallback error
+// Get retrieve error by Code, if no t exist then return fallback error
 func (b *Builder) Get(code string) *Error {
 	err, ok := b.errMap[code]
 	if ok {
@@ -64,6 +52,35 @@ func (b *Builder) Namespace() string {
 	return b.namespace
 }
 
+// FallbackError is getter function to retrieve FallbackError value
 func (b *Builder) FallbackError() *Error {
 	return b.fallbackErr
+}
+
+// CopyError take error input and override the namespace
+func (b *Builder) CopyError(err *Error, args ...SetOptionFn) *Error {
+	// Copy error and override namespace
+	args = b.mergeArgs(args)
+	bErr := err.Copy(args...)
+
+	// Register error to map
+	b.registerError(bErr)
+
+	return bErr
+}
+
+func (b *Builder) mergeArgs(args []SetOptionFn) []SetOptionFn {
+	if len(args) == 0 {
+		return []SetOptionFn{WithNamespace(b.namespace)}
+	}
+	return append(args, WithNamespace(b.namespace))
+}
+
+func (b *Builder) registerError(err *Error) {
+	// Check code not to collide with Fallback
+	if b.fallbackErr.Code() == err.Code() {
+		panic(DuplicateFallbackError)
+	}
+
+	b.errMap[err.Code()] = err
 }

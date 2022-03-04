@@ -58,6 +58,42 @@ func TestDuplicateFallbackError(t *testing.T) {
 	_ = b.NewError("500", "Another Error")
 }
 
+func TestBuilderCopyError(t *testing.T) {
+	b := errx.NewBuilder("myapp1")
+	srcErr := errx.NewError("ERR_1", "Resource not found", errx.WithNamespace("myapp2"))
+
+	cpErr := b.CopyError(srcErr)
+
+	if cpErr.Namespace() == srcErr.Namespace() || cpErr.Namespace() != "myapp1" {
+		t.Errorf("unexpected namespace equal. CopiedNamespace = %s", cpErr.Namespace())
+	}
+}
+
+func TestBuilderCopyErrorWithMetadata(t *testing.T) {
+	b := errx.NewBuilder("myapp1")
+	srcErr := errx.NewError("ERR_1", "Resource not found", errx.WithNamespace("myapp2"))
+
+	cpErr := b.CopyError(srcErr, errx.WithMetadata(map[string]interface{}{
+		"httpStatus": 400,
+	}))
+
+	meta := cpErr.Metadata()
+	if len(meta) != 1 {
+		t.Errorf("unexpected metadata in copied error. Metadata = %+v", cpErr.Metadata())
+		return
+	}
+
+	v, ok := meta["httpStatus"]
+	if !ok {
+		t.Errorf("unexpected httpStatus not found in metadata. Metadata = %+v", cpErr.Metadata())
+	}
+
+	if v != 400 {
+		t.Errorf("unexpected httpStatus in metadata. httpStatus = %d", v)
+		return
+	}
+}
+
 func RecoverPanic(t *testing.T, expectation error) func() {
 	return func() {
 		r := recover()
