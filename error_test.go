@@ -211,7 +211,7 @@ func TestIsGenericError(t *testing.T) {
 	}
 }
 
-func TestAddMetadata(t *testing.T) {
+func TestAddMetadataOption(t *testing.T) {
 	err := errx.NewError("ERR_1", "Resource not found", errx.AddMetadata("httpStatus", 400))
 
 	meta := err.Metadata()
@@ -257,6 +257,21 @@ func TestErrorMessage(t *testing.T) {
 
 	if err.Message() != "malformed token" {
 		t.Errorf("unexpected error message. Error = %s", err)
+	}
+}
+
+func TestAddMetadata(t *testing.T) {
+	err1 := errx.NewError("ERR_1", "Resource not found", errx.AddMetadata("httpStatus", 404))
+	err2 := err1.AddMetadata("overrideMessage", "Invoice not found")
+
+	// Check metadata on err
+	if meta := err1.Metadata(); len(meta) != 1 {
+		t.Errorf("unexpected metadata on err1. Metadata = %+v", meta)
+	}
+
+	// Check metadata on err2
+	if meta := err2.Metadata(); len(meta) != 2 {
+		t.Errorf("unexpected metadata on err2. Metadata = %+v", meta)
 	}
 }
 

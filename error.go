@@ -165,6 +165,17 @@ func (e *Error) Trace(args ...SetOptionFn) *Error {
 	return nErr
 }
 
+// AddMetadata copy existing error and set new metadata
+func (e *Error) AddMetadata(key string, value interface{}) *Error {
+	// Copy error
+	nErr := e.Copy()
+
+	// Add metadata
+	nErr.metadata[key] = value
+
+	return nErr
+}
+
 // baseError print base error message with its codes
 func (e *Error) baseError() string {
 	if e.namespace == "" {
