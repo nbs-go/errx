@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- feat(error): Add instance method AddMetadata on errx.Error
+
 ## 0.4.0
 
 - feat(error): Add Message getter function
