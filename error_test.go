@@ -86,6 +86,18 @@ func TestTraceInternalError(t *testing.T) {
 	}
 }
 
+func nestedErr1() *errx.Error {
+	return errx.NewError("ERR_1", "Bad Request").Trace(errx.Source(fmt.Errorf("invalid email format")))
+}
+
+func nestedErr2() *errx.Error {
+	return errx.Trace(nestedErr1())
+}
+
+func nestedErr3() *errx.Error {
+	return errx.Trace(nestedErr2())
+}
+
 func TestNestedTraceInternalError(t *testing.T) {
 	err := nestedErr3()
 
@@ -93,9 +105,9 @@ func TestNestedTraceInternalError(t *testing.T) {
 	traces := err.Traces()
 
 	expected := []string{
-		"nbs-go/errx/error_test.go:122",
-		"nbs-go/errx/error_test.go:118",
-		"nbs-go/errx/error_test.go:114",
+		"nbs-go/errx/error_test.go:98",
+		"nbs-go/errx/error_test.go:94",
+		"nbs-go/errx/error_test.go:90",
 	}
 	if len(traces) != len(expected) {
 		t.Errorf("unexpected trace length. Length = %d", len(traces))
@@ -108,18 +120,8 @@ func TestNestedTraceInternalError(t *testing.T) {
 			t.Errorf("unexpected traced line. Trace = %s", trace)
 		}
 	}
-}
 
-func nestedErr1() *errx.Error {
-	return errx.Trace(fmt.Errorf("invalid email format"))
-}
-
-func nestedErr2() *errx.Error {
-	return errx.InternalError().Trace(errx.Source(nestedErr1()))
-}
-
-func nestedErr3() *errx.Error {
-	return errx.Trace(nestedErr2())
+	t.Logf("Error = %s", err)
 }
 
 func TestPrintWithCause(t *testing.T) {
@@ -139,13 +141,15 @@ func TestPrintWithCause(t *testing.T) {
 		t.Errorf("unexpected base message. Message = %s", m)
 	}
 
-	if m := msgs[1]; m != "  CausedBy => invalid phone format" {
+	if m := msgs[1]; !strings.HasSuffix(m, "nbs-go/errx/error_test.go:128") {
+		t.Errorf("unexpected trace message. Trace = %s", m)
+	}
+
+	if m := msgs[2]; m != "  CausedBy => invalid phone format" {
 		t.Errorf("unexpected cause. Caused By = %s", m)
 	}
 
-	if m := msgs[2]; !strings.HasSuffix(m, "nbs-go/errx/error_test.go:126") {
-		t.Errorf("unexpected trace message. Trace = %s", m)
-	}
+	t.Logf("Error = %s", err)
 }
 
 func TestTraceNil(t *testing.T) {
@@ -237,7 +241,7 @@ func TestTraceEmpty(t *testing.T) {
 		return
 	}
 
-	if msg := traces[0]; !strings.HasSuffix(msg, "nbs-go/errx/error_test.go:231") {
+	if msg := traces[0]; !strings.HasSuffix(msg, "nbs-go/errx/error_test.go:235") {
 		t.Errorf("unexpected trace message. Trace = %s", msg)
 	}
 }
@@ -275,28 +279,46 @@ func TestAddMetadata(t *testing.T) {
 	}
 }
 
+func newNestedError1() error {
+	return errx.NewError("ERR_1", "customer.email is required").Trace()
+}
+
+func newNestedError2() error {
+	return errx.NewError("ERR_2", "Failed to create customer").Trace(errx.Source(newNestedError1()))
+}
+
+func newNestedError3() error {
+	return errx.NewError("400", "Bad Request").Trace(errx.Source(newNestedError2()))
+}
+
+func newNestedError4() error {
+	return errx.Trace(newNestedError3())
+}
+
+func newNestedError5() error {
+	return errx.Trace(newNestedError4())
+}
+
+func TestNestedTraceError(t *testing.T) {
+	err := newNestedError5()
+
+	xErr, ok := err.(*errx.Error)
+	if !ok {
+		t.Errorf("unexpected type of err. Type = %t", err)
+		return
+	}
+
+	if len(xErr.Traces()) != 5 {
+		t.Errorf("unexpected traces length. Length = %d", len(xErr.Traces()))
+		return
+	}
+
+	t.Logf("Error = %s", err)
+}
+
 func BenchmarkNested(b *testing.B) {
+	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		err := nestedErr3()
-
-		// Get traces
-		traces := err.Traces()
-
-		expected := []string{
-			"nbs-go/errx/error_test.go:122",
-			"nbs-go/errx/error_test.go:118",
-			"nbs-go/errx/error_test.go:114",
-		}
-		if len(traces) != len(expected) {
-			b.Errorf("unexpected trace length. Length = %d", len(traces))
-			return
-		}
-
-		// Check trace message
-		for it, trace := range traces {
-			if !strings.HasSuffix(trace, expected[it]) {
-				b.Errorf("unexpected traced line. Trace = %s", trace)
-			}
-		}
+		_ = newNestedError5()
 	}
 }
