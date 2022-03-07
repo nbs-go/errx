@@ -45,11 +45,6 @@ type Error struct {
 func (e *Error) Error() string {
 	errMsg := e.baseError()
 
-	if e.sourceErr != nil {
-		// Append CausedBy and traces
-		errMsg += "\n  CausedBy => " + e.sourceErr.Error()
-	}
-
 	if len(e.traces) > 0 {
 		errMsg += "\n  Traces => " + strings.Join(e.traces, "\n            ")
 	}
