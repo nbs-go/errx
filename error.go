@@ -54,6 +54,11 @@ func (e *Error) Error() string {
 		errMsg += "\n  Traces => " + strings.Join(e.traces, "\n            ")
 	}
 
+	if e.sourceErr != nil {
+		// Append CausedBy and traces
+		errMsg += "\n  CausedBy => " + e.sourceErr.Error()
+	}
+
 	return errMsg
 }
 
