@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+- fix(error): Merge traces on wrapping errx.Error
+- fix(error): Write CausedBy after Traces
+
 ## 0.5.0
 
 - feat(error): Add instance method AddMetadata on errx.Error
