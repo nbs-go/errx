@@ -316,6 +316,26 @@ func TestNestedTraceError(t *testing.T) {
 	t.Logf("Error = %s", err)
 }
 
+func TestTraceWithMetadata(t *testing.T) {
+	err := errx.NewError("E_SRC_1", "This is source error", errx.AddMetadata("key", "value"))
+
+	metaKey := "hiddenMessage"
+	metaValue := "this is hidden message"
+	err = err.Trace(errx.AddMetadata(metaKey, metaValue))
+
+	m := err.Metadata()
+
+	v, ok := m[metaKey]
+	if !ok {
+		t.Errorf("unexpected %s not found in metadata", metaKey)
+		return
+	}
+
+	if v != metaValue {
+		t.Errorf("unexpected metadata value = %s", metaValue)
+	}
+}
+
 func BenchmarkNested(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {

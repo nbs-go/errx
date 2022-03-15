@@ -32,10 +32,7 @@ func Wrap(err error) *Error {
 
 // trace returns where in file and line the function being called
 func trace(skip int) string {
-	_, file, line, ok := runtime.Caller(skip + 1)
-	if !ok {
-		return "<?>:<?>"
-	}
+	_, file, line, _ := runtime.Caller(skip + 1)
 	return fmt.Sprintf("%s:%d", file, line)
 }
 

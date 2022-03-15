@@ -188,6 +188,13 @@ func (e *Error) Trace(args ...SetOptionFn) *Error {
 		nErr.traces = append(nErr.traces, traces...)
 	}
 
+	// Merge metadata
+	if len(o.metadata) > 0 {
+		for k, v := range o.metadata {
+			nErr.metadata[k] = v
+		}
+	}
+
 	return nErr
 }
 
