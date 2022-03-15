@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- feat(error): Add option to AddMetadata when tracing
+
 ## 0.5.1
 
 - fix(error): Merge traces on wrapping errx.Error
