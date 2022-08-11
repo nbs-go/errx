@@ -11,7 +11,7 @@ func InternalError() *Error {
 
 // Trace wrap and trace error. If error is not *errx.Error then it will be wrapped into InternalError
 // Else, it will add stack trace to error
-func Trace(err error) *Error {
+func Trace(err error) error {
 	if err == nil {
 		return nil
 	}

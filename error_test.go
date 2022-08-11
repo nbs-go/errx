@@ -338,6 +338,14 @@ func TestTraceWithMetadata(t *testing.T) {
 	}
 }
 
+func TestTraceNilError(t *testing.T) {
+	err := errx.Trace(nil)
+
+	if err != nil {
+		t.Errorf("unexpected Traced error must be nil")
+	}
+}
+
 func BenchmarkNested(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
