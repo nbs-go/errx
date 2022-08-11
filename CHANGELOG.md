@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- fix: Nil error tracing
+
 ## 0.6.0
 
 - feat(error): Add option to AddMetadata when tracing
