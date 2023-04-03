@@ -82,7 +82,7 @@ func TestTraceInternalError(t *testing.T) {
 
 	// Check trace message
 	trace := traces[0]
-	if !strings.HasSuffix(trace, "nbs-go/errx/error_test.go:72") {
+	if !strings.HasSuffix(trace, "errx/error_test.go:72") {
 		t.Errorf("unexpected traced line. Trace = %s", trace)
 	}
 }
@@ -107,9 +107,9 @@ func TestNestedTraceInternalError(t *testing.T) {
 	traces := xErr.Traces()
 
 	expected := []string{
-		"nbs-go/errx/error_test.go:99",
-		"nbs-go/errx/error_test.go:95",
-		"nbs-go/errx/error_test.go:91",
+		"errx/error_test.go:99",
+		"errx/error_test.go:95",
+		"errx/error_test.go:91",
 	}
 	if len(traces) != len(expected) {
 		t.Errorf("unexpected trace length. Length = %d", len(traces))
@@ -143,7 +143,7 @@ func TestPrintWithCause(t *testing.T) {
 		t.Errorf("unexpected base message. Message = %s", m)
 	}
 
-	if m := msgs[1]; !strings.HasSuffix(m, "nbs-go/errx/error_test.go:130") {
+	if m := msgs[1]; !strings.HasSuffix(m, "errx/error_test.go:130") {
 		t.Errorf("unexpected trace message. Trace = %s", m)
 	}
 
@@ -243,7 +243,7 @@ func TestTraceEmpty(t *testing.T) {
 		return
 	}
 
-	if msg := traces[0]; !strings.HasSuffix(msg, "nbs-go/errx/error_test.go:237") {
+	if msg := traces[0]; !strings.HasSuffix(msg, "errx/error_test.go:237") {
 		t.Errorf("unexpected trace message. Trace = %s", msg)
 	}
 }
