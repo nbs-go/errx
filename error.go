@@ -152,8 +152,13 @@ func (e *Error) wrapAndTrace(srcErr error) (*Error, []string) {
 	// If srcErr error is equal to current error, Ignore source, copy current error and get traces from srcErr error
 	if errors.Is(srcErr, e) {
 		// Copy existing error and get traces from srcErr error
-		sErr, _ := srcErr.(*Error)
-		return e.Copy(), copyTraces(sErr.traces)
+		var traces []string
+		var sErr *Error
+		ok := errors.As(srcErr, &sErr)
+		if ok {
+			traces = copyTraces(sErr.traces)
+		}
+		return e.Copy(), traces
 	}
 
 	// Init traces
