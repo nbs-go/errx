@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+- fix: Copy traces only if source is errx.Error type
+
 ## 0.6.1
 
 - fix: Nil error tracing
